@@ -92,12 +92,13 @@ def main():
     clock = pygame.time.Clock()
     n = Network()
     player = int(n.getP())
-    print("You are player", player)
+    print(f"You are player {player}")
 
     while run:
         clock.tick(60)
         try:
             game = n.send(("GET_GAME", None))
+            print(f"Received game state: {game.__dict__}")
         except:
             run = False
             print("Couldn't get game")
@@ -108,6 +109,7 @@ def main():
             pygame.time.delay(500)
             try:
                 game = n.send(("RESET", None))
+                print("Game reset")
             except:
                 run = False
                 print("Couldn't get game")
@@ -138,9 +140,11 @@ def main():
                         if player == 0:
                             if not game.p1Went:
                                 n.send(("MOVE", btn.text))
+                                print(f"Sent move: {btn.text}")
                         else:
                             if not game.p2Went:
                                 n.send(("MOVE", btn.text))
+                                print(f"Sent move: {btn.text}")
 
         redrawWindow(win, game, player)
 
@@ -167,5 +171,7 @@ def menu_screen():
 
 while True:
     menu_screen()
+
+
 
 

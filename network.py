@@ -34,10 +34,19 @@ class Network:
 
     def send(self, data):
         try:
-            self.client.send(RPSCP.encode(*data))
-            return pickle.loads(self.client.recv(2048*2))
+            command, value = data
+            encoded_message = RPSCP.encode(command, value)
+            print(f"Client sending: {command}" + (f":{value}" if value else ""))
+            self.client.send(encoded_message)
+            response = self.client.recv(2048 * 2)
+            print(f"Client received: {len(response)} bytes")
+            return pickle.loads(response)
         except socket.error as e:
-            print(e)
+            print(f"Network error: {e}")
+
+
+
+
 
 
 

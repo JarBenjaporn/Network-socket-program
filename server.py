@@ -33,20 +33,27 @@ def threaded_client(conn, player, gameId):
         try:
             data = conn.recv(4096)
             command, value = RPSCP.decode(data)
+            print(f"Server received from player {player}: {command}" + (f":{value}" if value else ""))
 
             if gameId in games:
                 game = games[gameId]
 
                 if command == "DISCONNECT":
+                    print(f"Player {player} disconnected")
                     break
                 elif command == "RESET":
                     game.resetWent()
+                    print(f"Game {gameId} reset by player {player}")
                 elif command == "MOVE":
                     game.play(player, value)
+                    print(f"Player {player} made move: {value}")
                 elif command == "GET_GAME":
+                    print(f"Sending game state to player {player}")
                     pass
 
-                conn.sendall(pickle.dumps(game))
+                response = pickle.dumps(game)
+                conn.sendall(response)
+                print(f"Server sent {len(response)} bytes to player {player}")
             else:
                 break
 
@@ -80,5 +87,7 @@ while True:
 
 
     start_new_thread(threaded_client, (conn, p, gameId))
+
+
 
 
